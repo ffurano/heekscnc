@@ -883,6 +883,7 @@ void CNCCode::SetTextCtrl(wxTextCtrl *textCtrl)
 	}
 	textCtrl->SetValue(str);
 
+#ifndef __APPLE__
 #ifndef WIN32
 	// for Windows, this is done in COutputTextCtrl::OnPaint
 	for(std::list<CNCCodeBlock*>::iterator It = m_blocks.begin(); It != m_blocks.end(); It++)
@@ -890,6 +891,7 @@ void CNCCode::SetTextCtrl(wxTextCtrl *textCtrl)
 		CNCCodeBlock* block = *It;
 		block->FormatText(textCtrl, block == m_highlighted_block, false);
 	}
+#endif
 #endif
 
 	textCtrl->Thaw();

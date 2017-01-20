@@ -9,15 +9,15 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/"
 
 add_definitions ( -Wall -DOP_SKETCHES_AS_CHILDREN  )
 
-find_package( wxWidgets REQUIRED COMPONENTS base core gl )
+find_package( wxWidgets COMPONENTS core base gl aui REQUIRED)
 find_package( PythonInterp REQUIRED )
 
 #find OCE or OpenCASCADE
 set( CASCADE_LIBS TKernel )
 if( UNIX )
-  set( OCE_DIR "/usr/local/share/cmake/" )
+  set( OCE_DIR "/usr/local/Cellar/oce/0.17.2_1/OCE.framework/Versions/0.17/Resources/" CACHE PATH "Path to OCE")
 else()
-  set( OCE_DIR "c:/OCE-0.3.0/share/cmake" )
+  set( OCE_DIR "c:/OCE-0.3.0/share/cmake" CACHE PATH "Path to OCE")
 endif()
 find_package ( OCE )
 if( ${OCE_FOUND} )
@@ -29,11 +29,19 @@ else() #look for OpenCASCADE
   find_package ( OpenCASCADE REQUIRED COMPONENTS ${CASCADE_LIBS} )
 endif()
 
+if( APPLE )
+  # Apple includes two different openGL implementations, for Carbon and X11.  We want X11
+  set( OSX_INCLUDE_DIRS "/usr/X11/include" )
+  set( OSX_LIBS -L/usr/X11/lib -lGL -lX11 -lGLU -lglut )
+endif( APPLE )
+
+
 include(${wxWidgets_USE_FILE})
 include_directories (
 	${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 	${wxWidgets_INCLUDE_DIRS}
 	${OpenCASCADE_INCLUDE_DIR}
+        ${OSX_INCLUDE_DIRS}
 	)
 
 file( GLOB hcnc_py "${CMAKE_CURRENT_SOURCE_DIR}/*.py" "${CMAKE_CURRENT_SOURCE_DIR}/pycnc/*.py")
