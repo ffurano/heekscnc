@@ -5,7 +5,7 @@ cmake_minimum_required( VERSION 2.6 )
 set ( CMAKE_BUILD_TYPE Debug )
 add_definitions ( -Wall -DHEEKSPLUGIN -DHEEKSCNC -DUNICODE -DTIXML_USE_STL
                   -DOPEN_SOURCE_GEOMETRY -DWXUSINGDLL )
-find_package( wxWidgets REQUIRED COMPONENTS base core gl )
+find_package( wxWidgets REQUIRED COMPONENTS base core gl aui)
 
 #find OCE or OpenCASCADE
 set( CASCADE_LIBS "TKernel;TKBRep;TKTopAlgo;TKMath;TKV3d;TKGeomBase;TKGeomAlgo;TKShHealing;TKBO;TKBool;TKOffset;TKLCAF;TKMath;TKService" )
@@ -34,6 +34,7 @@ include_directories (
     ${HeeksCAD_SRC_DIR}
     ../kurve/geometry ../kurve/messages
     ${libheekstinyxml_INCLUDE_DIRS}
+    ${CMAKE_INSTALL_PREFIX}/include
     )
 set ( LIBRARY_OUTPUT_PATH ../bin )
 
@@ -174,9 +175,15 @@ set( heekscnc_SRCS
    )
 
 add_library( heekscnc SHARED ${heekscnc_SRCS} ${heekscad_SRCS} ${platform_SRCS} )
-target_link_libraries( heekscnc ${wxWidgets_LIBRARIES}  ${OpenCASCADE_LIBRARIES} ${libheekstinyxml_LIBRARIES} )
-set_target_properties( heekscnc PROPERTIES SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} )
-set_target_properties( heekscnc PROPERTIES LINK_FLAGS -Wl,-Bsymbolic-functions )
+target_link_libraries( heekscnc ${wxWidgets_LIBRARIES}  ${OpenCASCADE_LIBRARIES} ${libheekstinyxml_LIBRARIES} ${OSX_LIBS})
+set_target_properties( heekscnc PROPERTIES SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}  )
+#set_target_properties( heekscnc PROPERTIES LINK_FLAGS -Wl,-Bsymbolic-functions )
+set_target_properties( heekscnc PROPERTIES LINK_FLAGS -Wl )
+
+message(STATUS "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
+message(STATUS "wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR}")
+message(STATUS "wxWidgets_INCLUDE_DIRS: ${wxWidgets_INCLUDE_DIRS}")
+
 
 #---------------- the lines below tell cmake what files get installed where.---------------------
 #------------------- this is used for 'make install' and 'make package' -------------------------
